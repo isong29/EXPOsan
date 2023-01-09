@@ -47,7 +47,12 @@ def create_system(flowsheet=None):
     AD1 = qs.sanunits.AnaerobicCSTR('AD1', ins=J1.outs[0], outs=('biogas', 'ad_eff'), isdynamic=True ,model=adm1,                                    
                                     retain_cmps=[i for i in cmps_adm1.IDs if i.startswith('X_')])
     AD1.set_init_conc(**default_init_conds)
-    J2 = ADMtoASM('J2', upstream=AD1-1, thermo=thermo_asm1, isdynamic=True, adm1_model=adm1)
+    
+    S1 = qs.sanunits.Splitter('S1', ins=[AD1-1], outs=['', 'wasted'], split=0.08,
+                              init_with='WasteStream', isdynamic=True)
+
+    J2 = ADMtoASM('J2', upstream=S1-0, thermo=thermo_asm1, isdynamic=True, adm1_model=adm1)
+    # J2 = ADMtoASM('J2', upstream=AD1-1, thermo=thermo_asm1, isdynamic=True, adm1_model=adm1)
     
     # Subsequent units should be using ASM1 components
     qs.set_thermo(thermo_asm1)
@@ -55,7 +60,8 @@ def create_system(flowsheet=None):
     M1 = qs.sanunits.Mixer('M1', ins=[stream.RWW, J2.outs[0]], isdynamic=True)
     unit.A1.ins[1] = M1.outs[0]
     
-    sys = System('interface_sys', path=(*bsm1_sys.units, J1, AD1, J2, M1), recycle=(M1-0, stream.RAS, stream.RWW))
+    sys = System('interface_sys', path=(*bsm1_sys.units, J1, AD1, S1, J2, M1),
+                 recycle=(M1-0, stream.RAS, stream.RWW))
     sys.set_dynamic_tracker(unit.A1, unit.C1, J1, AD1, J2, M1)
     # sys = System(path=(*bsm1_sys.units, J1, AD1, J2), recycle=(stream.RAS, stream.RWW))
     # sys.set_dynamic_tracker(unit.A1, unit.C1, J1, AD1, J2)

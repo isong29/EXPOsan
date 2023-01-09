@@ -30,3 +30,25 @@ def test_interface():
 
 if __name__ == '__main__':
     test_interface()
+    
+    
+    
+# %%
+
+from exposan import interface as inter
+inter.load()
+sys = inter.interface_sys
+S1 = sys.flowsheet.unit.S1
+
+import numpy as np
+
+splits = np.arange(0, 0.11, 0.01)
+
+for split in splits:
+    S1.split = split
+    print(f'\n split = {split}')
+    try:
+        sys.simulate(method='RK23', t_span=(0, 50))
+    except:
+        print('---------------failed---------------')
+    sys.reset_cache()
