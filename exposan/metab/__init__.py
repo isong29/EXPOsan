@@ -26,16 +26,14 @@ from qsdsan import (
     ImpactItem as IItm
     )
 
-from exposan.metab import data_path as metab_data_path
-
 _impact_item_loaded = False
 def load_lca_data():
     global _impact_item_loaded
     if _impact_item_loaded:
         IInd.clear_registry()
         IItm.clear_registry()
-    ind_path = os.path.join(metab_data_path, 'TRACI_indicators.xlsx')
-    itm_path = os.path.join(metab_data_path, '_impact_items.xlsx')
+    ind_path = os.path.join(data_path, 'TRACI_indicators.xlsx')
+    itm_path = os.path.join(data_path, '_impact_items.xlsx')
     IInd.load_from_file(ind_path, sheet=0)
     IItm.load_from_file(itm_path)
     IItm('Stainless_steel', source='stainless_steel')
@@ -44,12 +42,17 @@ def load_lca_data():
 from . import process
 from .process import *
 
+from . import equipment
+from .equipment import *
+
 from . import units
 from .units import *
 
-from . import systems
-from .systems import *
+# from . import systems
+# from .systems import *
 
+# from . import models
+# from .models import *
 
 __all__ = (
     'folder',
@@ -57,8 +60,10 @@ __all__ = (
     'results_path',
     'figures_path',
     *process.__all__,
+    *equipment.__all__,
     *units.__all__,
-    *systems.__all__,
+    # *systems.__all__,
+    # *models.__all__,
 	)
 
 
