@@ -21,7 +21,8 @@ from qsdsan.processes._adm1 import (
     acid_base_rxn,
     substr_inhibit,
     Hill_inhibit,
-    non_compet_inhibit
+    non_compet_inhibit,
+    pH_inhibit
     )
 
 __all__ = ('flex_rhos_adm1',)
@@ -94,7 +95,8 @@ def flex_rhos_adm1(state_arr, params, T_op=298.15, pH=False, gas_transfer=True):
     if S_va > 0: rhos_flex[7] *= 1/(1+S_bu/S_va)
     if S_bu > 0: rhos_flex[8] *= 1/(1+S_va/S_bu)
         
-    Iph = Hill_inhibit(h, pH_ULs, pH_LLs)
+    #Iph = Hill_inhibit(h, pH_ULs, pH_LLs)
+    Iph = pH_inhibit(pH, pH_ULs, pH_LLs, lower_only=False)
     Iin = substr_inhibit(S_IN, KS_IN)
     Ih2 = non_compet_inhibit(S_h2, KIs_h2)
     Inh3 = non_compet_inhibit(nh3, KI_nh3)
